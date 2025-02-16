@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid"; // Import UUID
+import { v4 as uuidv4 } from "uuid";
 import searchIcon from "../icons/search.png";
 import playIcon from "../icons/play.png";
 import deleteIcon from "../icons/delete.png";
 import editIcon from "../icons/edit.png";
 import favoriteIcon from "../icons/favorite.png";
-import "./StreamList.css"; // Import CSS file
+import "./StreamList.css"; // Import the separate CSS file
 
 const StreamList = () => {
   const [input, setInput] = useState("");
   const [list, setList] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   // Add a new item to the list with UUID
   const addToList = () => {
@@ -27,15 +29,20 @@ const StreamList = () => {
     setList(updatedList);
   };
 
-  // Edit an item
-  const editItem = (id) => {
-    const newText = prompt("Edit the item:", list.find((item) => item.id === id).text);
-    if (newText) {
-      const updatedList = list.map((item) =>
-        item.id === id ? { ...item, text: newText } : item
-      );
-      setList(updatedList);
-    }
+  // Start editing a list item
+  const startEditing = (id, text) => {
+    setEditingId(id);
+    setEditingText(text);
+  };
+
+  // Save the edited item
+  const saveEdit = (id) => {
+    const updatedList = list.map((item) =>
+      item.id === id ? { ...item, text: editingText } : item
+    );
+    setList(updatedList);
+    setEditingId(null);
+    setEditingText("");
   };
 
   // Delete an item
@@ -61,19 +68,30 @@ const StreamList = () => {
       <ul>
         {list.map((item) => (
           <li key={item.id} className="streamlist-item">
-            <span style={{ textDecoration: item.completed ? "line-through" : "none", flexGrow: 1 }}>
-              {item.text}
-            </span>
-            <button>
+            {editingId === item.id ? (
+              <input
+                type="text"
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+                onBlur={() => saveEdit(item.id)}
+                autoFocus
+                className="edit-input"
+              />
+            ) : (
+              <span className={item.completed ? "completed" : ""} style={{ flexGrow: 1 }}>
+                {item.text}
+              </span>
+            )}
+            <button aria-label="Play">
               <img src={playIcon} alt="Play" width="20" height="20" />
             </button>
-            <button onClick={() => toggleComplete(item.id)}>
+            <button onClick={() => toggleComplete(item.id)} aria-label="Complete">
               <img src={favoriteIcon} alt="Complete" width="20" height="20" />
             </button>
-            <button onClick={() => editItem(item.id)}>
+            <button onClick={() => startEditing(item.id, item.text)} aria-label="Edit">
               <img src={editIcon} alt="Edit" width="20" height="20" />
             </button>
-            <button onClick={() => deleteItem(item.id)}>
+            <button onClick={() => deleteItem(item.id)} aria-label="Delete">
               <img src={deleteIcon} alt="Delete" width="20" height="20" />
             </button>
           </li>
