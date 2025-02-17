@@ -4,6 +4,7 @@ import streamlistIcon from "../icons/streamlist.png";
 import aboutIcon from "../icons/about.png";
 import moviesIcon from "../icons/movies.png";
 import cartIcon from "../icons/shoppingcartcheckout.png";
+import searchIcon from "../icons/search.png"; // ✅ Added search icon
 
 const Navbar = () => {
   return (
@@ -47,6 +48,16 @@ const Navbar = () => {
               style={{ width: "20px", height: "20px", marginRight: "5px" }}
             />
             About
+          </Link>
+        </li>
+        <li>
+          <Link to="/search"> {/* ✅ Added Search Movies Link */}
+            <img
+              src={searchIcon}
+              alt="Search Movies"
+              style={{ width: "20px", height: "20px", marginRight: "5px" }}
+            />
+            Search Movies
           </Link>
         </li>
       </ul>

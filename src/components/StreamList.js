@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import searchIcon from "../icons/search.png";
 import playIcon from "../icons/play.png";
@@ -13,15 +13,29 @@ const StreamList = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
-  // Add a new item to the list with UUID
+  // 🔹 Load data from Local Storage when the component mounts
+  useEffect(() => {
+    const savedList = localStorage.getItem("streamlist");
+    if (savedList) {
+      setList(JSON.parse(savedList));
+    }
+  }, []);
+
+  // 🔹 Save data to Local Storage whenever the list updates
+  useEffect(() => {
+    localStorage.setItem("streamlist", JSON.stringify(list));
+  }, [list]);
+
+  // 🔹 Add a new item to the list with UUID
   const addToList = () => {
     if (input.trim()) {
-      setList([...list, { id: uuidv4(), text: input, completed: false }]);
+      const newList = [...list, { id: uuidv4(), text: input, completed: false }];
+      setList(newList);
       setInput(""); // Clear input field
     }
   };
 
-  // Toggle item completion
+  // 🔹 Toggle item completion
   const toggleComplete = (id) => {
     const updatedList = list.map((item) =>
       item.id === id ? { ...item, completed: !item.completed } : item
@@ -29,13 +43,13 @@ const StreamList = () => {
     setList(updatedList);
   };
 
-  // Start editing a list item
+  // 🔹 Start editing a list item
   const startEditing = (id, text) => {
     setEditingId(id);
     setEditingText(text);
   };
 
-  // Save the edited item
+  // 🔹 Save the edited item
   const saveEdit = (id) => {
     const updatedList = list.map((item) =>
       item.id === id ? { ...item, text: editingText } : item
@@ -45,7 +59,7 @@ const StreamList = () => {
     setEditingText("");
   };
 
-  // Delete an item
+  // 🔹 Delete an item
   const deleteItem = (id) => {
     setList(list.filter((item) => item.id !== id));
   };
@@ -102,3 +116,4 @@ const StreamList = () => {
 };
 
 export default StreamList;
+
